@@ -41,8 +41,12 @@ export default class DB {
     if (DB.existsDB()) {
       data = fs.readFileSync("db.json", "utf-8");
     } else {
-      DB.createDB();
-      return false;
+      try {
+        DB.createDB();
+        return false;
+      } catch (err) {
+        throw new Error(err.message);
+      }
     }
 
     try {
@@ -59,8 +63,12 @@ export default class DB {
     if (DB.existsDB) {
       data = fs.readFileSync("db.json", "utf-8");
     } else {
-      DB.createDB();
-      return false;
+      try {
+        DB.createDB();
+        return false;
+      } catch (err) {
+        throw new Error(err.message);
+      }
     }
 
     try {
@@ -77,8 +85,12 @@ export default class DB {
     if (DB.existsDB) {
       data = fs.readFileSync("db.json", "utf-8");
     } else {
-      DB.createDB();
-      return false;
+      try {
+        DB.createDB();
+        return false;
+      } catch (err) {
+        throw new Error(err.message);
+      }
     }
 
     try {
@@ -86,6 +98,77 @@ export default class DB {
       return data;
     } catch (err) {
       throw new Error("Can't get all tasks");
+    }
+  }
+
+  static saveTask(title, completed = false, id = 0) {
+    id = Number(id);
+    if (id < 0 || id !== parseInt(id)) {
+      throw new Error("id must be a positive integer");
+    } else if (typeof title !== "string" || title.length < 3) {
+      throw new Error("title must be a string of at least 3 characters");
+    }
+
+    const task = DB.getTaskByTitle(title);
+    if (task && task.id != id) {
+      throw new Error("Task already exists");
+    }
+
+    let data;
+
+    if (DB.existsDB()) {
+      data = fs.readFileSync("db.json", "utf-8");
+    } else {
+      try {
+        DB.createDB();
+        return false;
+      } catch (err) {
+        throw new Error(err.message);
+      }
+    }
+
+    try {
+      data = JSON.parse(data);
+    } catch (err) {
+      throw new Error("Can't parse DB");
+    }
+
+    if (id === 0) {
+      if (data.length === 0) {
+        id = 1;
+      } else {
+        id = data[data.length - 1].id + 1;
+      }
+
+      data.push({
+        id,
+        title,
+        completed,
+      });
+
+      const jsonData = JSON.stringify(data);
+      try {
+        fs.writeFileSync("db.json", jsonData, "utf-8");
+        return true;
+      } catch (err) {
+        throw new Error("Can't save task");
+      }
+    } else {
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id === id) {
+          data[i].title = title;
+          data[i].completed = completed;
+
+          const jsonData = JSON.stringify(data);
+          try {
+            fs.writeFileSync("db.json", jsonData, "utf-8");
+            return true;
+          } catch (err) {
+            throw new Error("Can't save task");
+          }
+        }
+      }
+      throw new Error("Task not found");
     }
   }
 }
