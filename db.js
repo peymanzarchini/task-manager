@@ -35,4 +35,57 @@ export default class DB {
       return false;
     }
   }
+
+  static getTaskById(id) {
+    let data;
+    if (DB.existsDB()) {
+      data = fs.readFileSync("db.json", "utf-8");
+    } else {
+      DB.createDB();
+      return false;
+    }
+
+    try {
+      data = JSON.parse(data);
+      const task = data.find((task) => task.id === Number(id));
+      return task ? task : false;
+    } catch (err) {
+      throw new Error("Can't get task by id");
+    }
+  }
+
+  static getTaskByTitle(title) {
+    let data;
+    if (DB.existsDB) {
+      data = fs.readFileSync("db.json", "utf-8");
+    } else {
+      DB.createDB();
+      return false;
+    }
+
+    try {
+      data = JSON.parse(data);
+      const task = data.find((task) => task.title === title);
+      return task ? task : false;
+    } catch (err) {
+      throw new Error("Can't get task by title");
+    }
+  }
+
+  static getAllTasks() {
+    let data;
+    if (DB.existsDB) {
+      data = fs.readFileSync("db.json", "utf-8");
+    } else {
+      DB.createDB();
+      return false;
+    }
+
+    try {
+      data = JSON.parse(data);
+      return data;
+    } catch (err) {
+      throw new Error("Can't get all tasks");
+    }
+  }
 }
