@@ -22,7 +22,7 @@ export default class DB {
   static resetDB() {
     try {
       fs.writeFileSync("db.json", "[]", "utf-8");
-      console.log(success("DB file reset"));
+      return true;
     } catch (err) {
       throw new Error("Can't reset DB");
     }
@@ -162,7 +162,7 @@ export default class DB {
           const jsonData = JSON.stringify(data);
           try {
             fs.writeFileSync("db.json", jsonData, "utf-8");
-            return true;
+            return id;
           } catch (err) {
             throw new Error("Can't save task");
           }
@@ -190,7 +190,7 @@ export default class DB {
 
           try {
             fs.writeFileSync("db.json", data, "utf-8");
-            return true;
+            return id;
           } catch (err) {
             throw new Error("Can't delete task");
           }
