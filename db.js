@@ -171,4 +171,35 @@ export default class DB {
       throw new Error("Task not found");
     }
   }
+
+  static deleteTask(id) {
+    id = Number(id);
+    if (id > 0 && id === parseInt(id)) {
+      let data;
+      try {
+        data = fs.readFileSync("db.json", "utf-8");
+        data = JSON.parse(data);
+      } catch (err) {
+        throw new Error("Can't read DB file");
+      }
+
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].id === id) {
+          data.splice(i, 1);
+          data = JSON.stringify(data);
+
+          try {
+            fs.writeFileSync("db.json", data, "utf-8");
+            return true;
+          } catch (err) {
+            throw new Error("Can't delete task");
+          }
+        }
+      }
+
+      return false;
+    } else {
+      throw new Error("id must be a positive integer");
+    }
+  }
 }
